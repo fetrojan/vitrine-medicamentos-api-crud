@@ -26,7 +26,18 @@ medicamentoRouter.post('/', async (req: Request, res: Response) => {
 medicamentoRouter.get('/', async (req: Request, res: Response) => {
     try {
 
-        const result = await medicamentoRepository.find();
+        const userId = Number(req.headers.userid);
+
+        if(!userId) {
+            res.status(400).json("Será necessário informar o userId no header")
+            return
+        }
+
+        const result = await medicamentoRepository.find({
+            where: {
+                userId: userId
+            }
+        });
 
         if(!result) {
             res.status(404).json("Nenhum medicamento encontrado!")
@@ -39,6 +50,8 @@ medicamentoRouter.get('/', async (req: Request, res: Response) => {
         res.status(500).json("Não foi possivel executar a solicitação!")
     }
 })
+
+    
 
 medicamentoRouter.get('/id', async (req: Request, res: Response) => {
     try {
@@ -64,13 +77,7 @@ medicamentoRouter.get('/id', async (req: Request, res: Response) => {
 medicamentoRouter.get('/all', async (req: Request, res: Response) => {
     try {
 
-        const userId = req.headers.userId;
-
-        const result = await medicamentoRepository.find({
-            where: {
-                userId: userId
-            }
-        });
+        const result = await medicamentoRepository.find();
 
         if(!result) {
             res.status(404).json("Nenhum medicamento encontrado!")
@@ -89,9 +96,16 @@ medicamentoRouter.put('/id', async (req: Request, res: Response) => {
 
         const id = Number(req.params.id);
 
+        const userId = Number(req.headers.userid);
+
+        if(!userId) {
+            res.status(400).json("Será necessário informar o userId no header")
+            return
+        }
+
         const medBody = req.body as Medicamento
 
-        const medicamento = await medicamentoRepository.findOneBy({id: id});
+        const medicamento = await medicamentoRepository.findOne({where:{id: id, userId: userId}});
 
         if(!medicamento) {
             res.status(404).json("Medicamento não encontrado!")
@@ -115,7 +129,14 @@ medicamentoRouter.delete('/id', async (req: Request, res: Response) => {
 
         const id = Number(req.params.id);
 
-        const medicamento = await medicamentoRepository.findOneBy({id: id});
+        const userId = Number(req.headers.userid);
+
+        if(!userId) {
+            res.status(400).json("Será necessário informar o userId no header")
+            return
+        }
+
+        const medicamento = await medicamentoRepository.findOne({where:{id: id, userId: userId}});
 
         if(!medicamento) {
             res.status(404).json("Medicamento não encontrado!")
