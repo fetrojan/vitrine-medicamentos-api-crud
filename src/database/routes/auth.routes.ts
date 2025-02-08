@@ -13,7 +13,18 @@ authRouter.post('/', async (req: Request, res: Response) => {
     try {
         const userBody = req.body
 
-        const user = await userRepository.findOne({where: {email: userBody.email}})
+        const user = await userRepository.findOne({where: {email: userBody.email},
+        relations: ['roles'],
+        select: {
+            roles: {
+                id: true,
+                description: true,
+                permissions: {
+                    id: true,
+                    description: true
+                }
+            }
+        }})
 
         if(!user) {
             res.status(400).json("Usuário não encontrado!")
@@ -26,7 +37,8 @@ authRouter.post('/', async (req: Request, res: Response) => {
 
             const payload = {
                 email: user.email,
-                userId: user.id
+                userId: user.id,
+                roles: JSON.stringify(user.roles)
             }
 
             const token = jwt.sign(payload, process.env.JWT_SECRET, {expiresIn: '1h'})
