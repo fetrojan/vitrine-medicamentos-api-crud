@@ -1,17 +1,26 @@
+import dotenv from "dotenv"
+dotenv.config()
+
 import 'reflect-metadata';
-import { AppDataSource } from './database/data-source';
 import express from 'express';
+import { AppDataSource } from './database/data-source';
 import cors from "cors"
+
 import userRouter from './database/routes/user.routes';
 import authRouter from './database/routes/auth.routes';
 import medicamentoRouter from './database/routes/medicamentos.routes';
+
+import authenticate from './middleware/authenticate';
+
+import { Role } from './database/entities/Role';
+import { User } from './database/entities/User';
 
 const app = express()
 
 app.use(cors())
 app.use(express.json())
 
-app.use('/user', userRouter)
+app.use('/user', authenticate, userRouter)
 app.use('/login', authRouter)
 app.use('/medicamento', medicamentoRouter)
 
