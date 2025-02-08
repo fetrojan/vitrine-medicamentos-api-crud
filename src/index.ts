@@ -10,8 +10,6 @@ import userRouter from './database/routes/user.routes';
 import authRouter from './database/routes/auth.routes';
 import medicamentoRouter from './database/routes/medicamentos.routes';
 
-import authenticate from './middleware/authenticate';
-
 import { Role } from './database/entities/Role';
 import { User } from './database/entities/User';
 
@@ -20,7 +18,7 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
-app.use('/user', authenticate, userRouter)
+app.use('/user', userRouter)
 app.use('/login', authRouter)
 app.use('/medicamento', medicamentoRouter)
 

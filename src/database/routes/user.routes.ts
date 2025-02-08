@@ -3,11 +3,13 @@ import { User } from '../entities/User';
 import { AppDataSource } from '../data-source';
 import bcrypt from 'bcrypt';
 
+import authenticate from '../../middleware/authenticate';
+
 const userRouter = Router();
 
 const userRepository = AppDataSource.getRepository(User);
 
-userRouter.post('/', async (req: Request, res: Response) => {
+userRouter.post('/', authenticate(["criar_usuario"]), async (req: Request, res: Response) => {
     try {
         const userBody = req.body;
 
@@ -22,7 +24,7 @@ userRouter.post('/', async (req: Request, res: Response) => {
         userBody.senha = senhaCriptografada
 
         await userRepository.save(userBody);
-        res.status(201).json("Usuário cadastrado com sucesso!", userBody)
+        res.status(201).json(userBody)
         return
 
 
