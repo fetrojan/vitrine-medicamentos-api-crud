@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config()
+
 import 'reflect-metadata';
 import { AppDataSource } from './database/data-source';
 import express from 'express';
@@ -6,12 +9,14 @@ import userRouter from './database/routes/user.routes';
 import authRouter from './database/routes/auth.routes';
 import medicamentoRouter from './database/routes/medicamentos.routes';
 
+import authenticate from './middleware/authenticate';
+
 const app = express()
 
 app.use(cors())
 app.use(express.json())
 
-app.use('/user', userRouter)
+app.use('/user', authenticate, userRouter)
 app.use('/login', authRouter)
 app.use('/medicamento', medicamentoRouter)
 
